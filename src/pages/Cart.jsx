@@ -48,7 +48,7 @@ const Cart = () => {
       alert("Razorpay SDK failed to load. Are you online?");
       return;
     }
-    const paymentResp = await axios.post("http://localhost:3000/api/booking/", {
+    const paymentResp = await axios.post(URL.CHECKOUT_URL, {
       productsArray: cartItems,
       priceAtBooking: totalAmount,
       withCredentials: true,
