@@ -1,12 +1,86 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "../redux/slices/cartSlice";
+import URl from "../urlConfig";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+
+function loadScript(src) {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+}
 
 const Cart = () => {
   const cartItems = useSelector((store) => store.cart.cartProducts);
   const products = useSelector((store) => store.products.products);
 
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  useEffect(() => {
+    const total = products.reduce((acc, item) => {
+      const product = cartItems.find((cartItem) => cartItem.id === item.id);
+      if (product) {
+        return acc + item.price * product.quantity;
+      }
+      return acc;
+    }, 0);
+    totalAmount.toFixed(2);
+    setTotalAmount(total);
+  }, [cartItems, products]);
+
   const dispatch = useDispatch();
+
+  const displayRazorpay = async () => {
+    const res = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+    const paymentResp = await axios.post("http://localhost:3000/api/booking/", {
+      productsArray: cartItems,
+      priceAtBooking: totalAmount,
+      withCredentials: true,
+    });
+    console.log(paymentResp);
+    const { id, currency, amount } = paymentResp.data.data;
+    console.log("id", id, "currency", currency, "amount", amount);
+    const options = {
+      key: "rzp_test_TJCaQMtEWOPYz2", // Enter the Key ID generated from the Dashboard
+      amount: amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      currency: currency,
+      name: "E-commerce Site",
+      description: "Test Transaction",
+      image: "",
+      order_id: id,
+      callback_url: "http://localhost:3000/api/booking/verify",
+      // notes: {
+      //   address: "Razorpay Corporate Office",
+      // },
+      handler: function (response) {
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature);
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+    console.log("options", options);
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  };
 
   const deleteFromCart = (id) => {
     dispatch(actions.removeFromCart({ id }));
@@ -56,23 +130,14 @@ const Cart = () => {
           <h2 className="text-lg font-bold mb-2">Cart Summary</h2>
           {/* Render cart summary here */}
           <p>Total items: {cartItems.length}</p>
-          <p>
-            Total: $
-            {productsInCart.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            )}
-          </p>
-          <p>Shipping: $10</p>
-          <p>
-            Grand Total: $
-            {productsInCart.reduce(
-              (acc, item) => acc + item.price * item.quantity,
-              0
-            ) + 10}
-          </p>
+          <p>Total: ${totalAmount}</p>
+          <p>Shipping: $ 10</p>
+          <p>Grand Total: $ {totalAmount + 10}</p>
           <hr />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded mt-4">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+            onClick={displayRazorpay}
+          >
             Checkout
           </button>
         </div>
