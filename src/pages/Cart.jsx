@@ -4,7 +4,7 @@ import { actions } from "../redux/slices/cartSlice";
 import URL from "../urlConfig";
 import axios from "axios";
 
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 function loadScript(src) {
   return new Promise((resolve) => {
@@ -51,7 +51,6 @@ const Cart = () => {
     const paymentResp = await axios.post(URL.CHECKOUT_URL, {
       productsArray: cartItems,
       priceAtBooking: totalAmount,
-      withCredentials: true,
     });
     console.log(paymentResp);
     const { id, currency, amount } = paymentResp.data.data;
