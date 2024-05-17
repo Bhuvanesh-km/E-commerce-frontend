@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "../redux/slices/cartSlice";
-import URl from "../urlConfig";
+import URL from "../urlConfig";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 function loadScript(src) {
   return new Promise((resolve) => {
@@ -64,7 +64,7 @@ const Cart = () => {
       description: "Test Transaction",
       image: "",
       order_id: id,
-      callback_url: "http://localhost:3000/api/booking/verify",
+      callback_url: URL.VERIFY_PAYMENT_URL,
       // notes: {
       //   address: "Razorpay Corporate Office",
       // },
