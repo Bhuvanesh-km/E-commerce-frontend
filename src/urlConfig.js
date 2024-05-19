@@ -1,4 +1,4 @@
-const BASE_URL = "https://e-commerce-backend-80u7.onrender.com";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const urlConfig = {
   LOGIN_URL: `${BASE_URL}/api/auth/login`,
