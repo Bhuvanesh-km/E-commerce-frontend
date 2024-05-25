@@ -11,33 +11,28 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action) => {
       let product = state.cartProducts.find(
-        (product) => product.id === action.payload.id
+        (product) => product.id === action.payload.product_id
       );
       if (product) {
-        product.quantity++;
+        product.quantity += action.payload.count;
       } else {
-        state.cartProducts.push({ id: action.payload.id, quantity: 1 });
+        state.cartProducts.push({
+          id: action.payload.product_id,
+          quantity: action.payload.count,
+        });
       }
-      state.cartQuantity++;
-    },
-    deleteFromCart: (state, action) => {
-      let product = state.cartProducts.find(
-        (product) => product.id === action.payload.id
-      );
-      if (product.quantity > 1) {
-        product.quantity--;
-      } else {
-        state.cartProducts = state.cartProducts.filter(
-          (product) => product.id !== action.payload.id
-        );
-      }
-      state.cartQuantity--;
+      state.cartQuantity += action.payload.count;
     },
     removeFromCart: (state, action) => {
-      state.cartQuantity--;
-      state.cartProducts = state.cartProducts.filter(
-        (product) => product.id !== action.payload.id
+      let product = state.cartProducts.find(
+        (product) => product.id === action.payload.product_id
       );
+      if (product) {
+        state.cartQuantity -= product.quantity;
+        state.cartProducts = state.cartProducts.filter(
+          (product) => product.id !== action.payload.product_id
+        );
+      }
     },
   },
 });

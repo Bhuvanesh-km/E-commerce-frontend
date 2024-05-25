@@ -4,7 +4,6 @@ import { NavBar, RequireAuth } from "./components/index";
 import {
   Home,
   Orders,
-  CheckOut,
   Cart,
   UserProfile,
   Login,

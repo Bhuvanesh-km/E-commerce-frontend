@@ -82,7 +82,7 @@ const Cart = () => {
   };
 
   const deleteFromCart = (id) => {
-    dispatch(actions.removeFromCart({ id }));
+    dispatch(actions.removeFromCart({ product_id: id }));
   };
 
   const productsInCart = cartItems.map((item) => {
@@ -97,7 +97,9 @@ const Cart = () => {
         {/* Cart items */}
         <div className="col-span-2">
           {productsInCart.length === 0 ? (
-            <p>Your cart is empty.</p>
+            <p className="flex w-full my-10 justify-center">
+              Your cart is empty.
+            </p>
           ) : (
             <div>
               {productsInCart.map((item) => (
@@ -107,10 +109,10 @@ const Cart = () => {
                 >
                   <div>
                     <h2 className="text-lg font-bold">{item.title}</h2>
-                    <p className="text-gray-500">${item.price}</p>
+                    <p className="text-gray-500">${item.price.toFixed(2)}</p>
                     <p className="text-gray-500">Quantity: {item.quantity}</p>
                     <p className="text-gray-500">
-                      Total: ${item.price * item.quantity}
+                      Total: ${(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                   <button
@@ -125,21 +127,23 @@ const Cart = () => {
           )}
         </div>
         {/* Cart summary */}
-        <div className="bg-gray-100 p-4 h-max">
-          <h2 className="text-lg font-bold mb-2">Cart Summary</h2>
-          {/* Render cart summary here */}
-          <p>Total items: {cartItems.length}</p>
-          <p>Total: ${totalAmount}</p>
-          <p>Shipping: $ 10</p>
-          <p>Grand Total: $ {totalAmount + 10}</p>
-          <hr />
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-            onClick={displayRazorpay}
-          >
-            Checkout
-          </button>
-        </div>
+        {productsInCart.length === 0 ? null : (
+          <div className="bg-gray-100 p-4 h-max">
+            <h2 className="text-lg font-bold mb-2">Cart Summary</h2>
+            {/* Render cart summary here */}
+            <p>Total items: {cartItems.length}</p>
+            <p>Total: ${totalAmount.toFixed(2)}</p>
+            <p>Shipping: $ 10</p>
+            <p>Grand Total: $ {(totalAmount + 10).toFixed(2)}</p>
+            <hr />
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+              onClick={displayRazorpay}
+            >
+              Checkout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

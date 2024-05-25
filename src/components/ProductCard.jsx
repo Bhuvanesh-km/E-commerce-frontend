@@ -55,7 +55,9 @@ const ProductCard = (props) => {
           <button
             onClick={() => {
               if (count === 0) return alert("Please add quantity");
-              dispatch(actions.addToCart({ ...product, count: count }));
+              dispatch(
+                actions.addToCart({ product_id: product.id, count: count })
+              );
               setCount(0);
             }}
             className="bg-rose-500 text-white rounded-md px-2 py-1 hover:bg-rose-600 transition duration-200 ease-in-out"
